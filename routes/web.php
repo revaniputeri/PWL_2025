@@ -26,6 +26,10 @@ Route::get('/articles/{id}', [PageController::class, 'articles']);
 
 Route::resource('photos', PhotoController::class);
 
+Route::get('/greeting', function () {
+	return view('blog.hello', ['name' => 'Andi']);
+});
+
 Route::get('/world', function () {
     return 'World';
 });
