@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\LevelController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\WelcomeController;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -44,3 +46,7 @@ Route::get('/posts/{post}/comments/{comment}', function ($postId, $commentId) {
 Route::get('/user/{name?}', function ($name = 'John') {
     return 'Nama saya ' . $name;
 });
+
+//routing jobsheet 3
+
+Route::get('/level', [LevelController::class, 'index']);
