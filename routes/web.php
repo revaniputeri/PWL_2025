@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\LevelController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\WelcomeController;
+use Database\Seeders\KategoriSeeder;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 
@@ -50,3 +52,5 @@ Route::get('/user/{name?}', function ($name = 'John') {
 //routing jobsheet 3
 
 Route::get('/level', [LevelController::class, 'index']);
+
+Route::get('/kategori', [KategoriController::class, 'index']);
