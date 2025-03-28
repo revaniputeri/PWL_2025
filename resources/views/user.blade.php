@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Data User</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
     <div class="container mt-4">
         <h1 class="mb-4">Data User</h1>
@@ -17,16 +19,15 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($data as $user)
-                    <tr>
-                        <td>{{ $user->user_id }}</td>
-                        <td>{{ $user->username }}</td>
-                        <td>{{ $user->nama }}</td>
-                        <td>{{ $user->level_id }}</td>
-                    </tr>
-                @endforeach
+                <tr>
+                    <td>{{ $data->user_id }}</td>
+                    <td>{{ $data->username }}</td>
+                    <td>{{ $data->nama }}</td>
+                    <td>{{ $data->level_id }}</td>
+                </tr>
             </tbody>
         </table>
     </div>
 </body>
+
 </html>
