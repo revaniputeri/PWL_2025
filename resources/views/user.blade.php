@@ -10,7 +10,7 @@
     <div class="container mt-4">
         <h1 class="mb-4">Data User</h1>
         <table class="table table-bordered">
-            {{-- <thead class="table-dark">
+            <thead class="table-dark">
                 <tr>
                     <th>ID</th>
                     <th>Username</th>
@@ -25,8 +25,8 @@
                     <td>{{ $data->nama }}</td>
                     <td>{{ $data->level_id }}</td>
                 </tr>
-            </tbody> --}}
-            <thead class="table-dark">
+            </tbody>
+            {{-- <thead class="table-dark">
                 <tr>
                     <th>Jumlah Pengguna</th>
                 </tr>
@@ -35,7 +35,7 @@
                 <tr>
                     <td>{{ $data }}</td>
                 </tr>
-            </tbody>
+            </tbody> --}}
         </table>
     </div>
 </body>
