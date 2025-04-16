@@ -6,14 +6,15 @@ use Illuminate\Http\Request;
 
 class WelcomeController extends Controller
 {
-    public function hello()
+    public function index()
     {
-        return 'Hello World';
-    }
+        $breadcrumb = (object) [
+            'title' => 'Selamat Datang',
+            'list' => ['Home', 'Welcome']
+        ];
 
-    public function greeting() {
-        return view('blog.hello')
-        ->with ('name', 'Andi')
-        ->with ('occupation', 'Astronaut');
+        $activeMenu = 'dashboard';
+
+        return view('welcome', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
     }
 }
