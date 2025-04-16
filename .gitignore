@@ -5,6 +5,7 @@
 /public/storage
 /storage/*.key
 /vendor
+new.sql
 .env
 .env.backup
 .env.production
