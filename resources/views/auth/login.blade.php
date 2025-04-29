@@ -60,6 +60,13 @@
                         <!-- /.col -->
                     </div>
                 </form>
+                <div class="mt-3 text-center">
+                    <p class="mb-0">
+                        <a href="{{ route('register') }}" class="btn btn-block btn-success">
+                            <i class="fas fa-user-plus mr-2"></i>Register
+                        </a>
+                    </p>
+                </div>
             </div>
             <!-- /.card-body -->
         </div>

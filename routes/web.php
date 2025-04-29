@@ -16,8 +16,8 @@ Route::post('/login', [AuthController::class, 'postlogin']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Routes for registration
-// Route::get('/register', [App\Http\Controllers\RegisterController::class, 'showRegistrationForm'])->name('register');
-// Route::post('/register', [App\Http\Controllers\RegisterController::class, 'register']);
+Route::get('/register', [App\Http\Controllers\RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [App\Http\Controllers\RegisterController::class, 'register']);
 
 // Dashboard yang dapat diakses oleh semua role yang login
 Route::middleware(['auth'])->group(function () {
