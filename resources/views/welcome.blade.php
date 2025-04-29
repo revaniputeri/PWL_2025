@@ -9,6 +9,9 @@
     </div>
     <div class="card-body">
         Selamat Datang semua, ini adalah halaman utama dari aplikasi ini.
+        @auth
+            <p>Anda login sebagai: {{ auth()->user()->nama }}</p>
+        @endauth
     </div>
 </div>
 @endsection
