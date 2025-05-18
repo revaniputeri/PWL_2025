@@ -7,6 +7,8 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator; // Import the Validator class
+use Illuminate\Support\Facades\Log; // Import the Log facade
+use PhpOffice\PhpSpreadsheet\IOFactory; // Import IOFactory for Excel handling
 
 class LevelController extends Controller
 {
@@ -256,5 +258,126 @@ class LevelController extends Controller
             }
         }
         return redirect('/');
+    }
+
+    /**
+     * Show the form for importing levels
+     */
+    public function import()
+    {
+        return view('level.import');
+    }
+
+    /**
+     * Import levels from Excel file
+     */
+    public function import_ajax(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'file_level' => ['required', 'mimes:xlsx,xls', 'max:1024']
+            ];
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors()
+                ]);
+            }
+
+            try {
+                $file = $request->file('file_level');
+                $reader = IOFactory::createReader('Xlsx');
+                $reader->setReadDataOnly(true);
+                $spreadsheet = $reader->load($file->getRealPath());
+                $sheet = $spreadsheet->getActiveSheet();
+                $data = $sheet->toArray(null, false, true, true);
+
+                $insert = [];
+                if (count($data) > 1) {
+                    foreach ($data as $row => $value) {
+                        if ($row > 1) { // Skip header row
+                            // Fixed column name to match database schema: level_code instead of level_kode
+                            $insert[] = [
+                                'level_code' => $value['A'],
+                                'level_nama' => $value['B'],
+                                'created_at' => now(),
+                                'updated_at' => now()
+                            ];
+                        }
+                    }
+                    if (count($insert) > 0) {
+                        LevelModel::insertOrIgnore($insert);
+                        return response()->json([
+                            'status' => true,
+                            'message' => 'Data level berhasil diimport'
+                        ]);
+                    }
+                }
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Tidak ada data yang diimport'
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Level Import Error: ' . $e->getMessage());
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Gagal mengunggah file: ' . $e->getMessage()
+                ], 500);
+            }
+        }
+        return redirect('/level');
+    }
+
+    /**
+     * Export level data to Excel
+     */
+    public function export_excel()
+    {
+        // Get level data
+        $levels = LevelModel::orderBy('level_id')->get();
+
+        // Load PhpSpreadsheet library
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Set column headers
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Kode');
+        $sheet->setCellValue('C1', 'Nama');
+        $sheet->setCellValue('D1', 'Tgl Dibuat');
+
+        // Make headers bold
+        $sheet->getStyle('A1:D1')->getFont()->setBold(true);
+
+        // Set column widths
+        $sheet->getColumnDimension('A')->setWidth(5);
+        $sheet->getColumnDimension('B')->setWidth(15);
+        $sheet->getColumnDimension('C')->setWidth(30);
+        $sheet->getColumnDimension('D')->setWidth(20);
+
+        // Fill data
+        $row = 2;
+        $no = 1;
+        foreach ($levels as $level) {
+            $sheet->setCellValue('A' . $row, $no++);
+            $sheet->setCellValue('B' . $row, $level->level_code);
+            $sheet->setCellValue('C' . $row, $level->level_nama);
+            $sheet->setCellValue('D' . $row, $level->created_at);
+            $row++;
+        }
+
+        // Create Excel writer
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+        // Set headers to download file
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="Data_Level_' . date('YmdHis') . '.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        // Save to output
+        $writer->save('php://output');
+        exit;
     }
 }
