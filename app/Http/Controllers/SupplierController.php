@@ -415,4 +415,67 @@ class SupplierController extends Controller
 
         return redirect('/supplier');
     }
+
+    /**
+     * Export supplier data to Excel
+     */
+    public function export_excel()
+    {
+        // Get supplier data
+        $suppliers = SupplierModel::all();
+
+        // Load PhpSpreadsheet library
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Set column headers
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Kode');
+        $sheet->setCellValue('C1', 'Nama');
+        $sheet->setCellValue('D1', 'Alamat');
+        $sheet->setCellValue('E1', 'Telepon');
+        $sheet->setCellValue('F1', 'Email');
+        $sheet->setCellValue('G1', 'Kontak');
+        $sheet->setCellValue('H1', 'Tgl Dibuat');
+
+        // Make headers bold
+        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+
+        // Set column widths
+        $sheet->getColumnDimension('A')->setWidth(5);
+        $sheet->getColumnDimension('B')->setWidth(15);
+        $sheet->getColumnDimension('C')->setWidth(30);
+        $sheet->getColumnDimension('D')->setWidth(40);
+        $sheet->getColumnDimension('E')->setWidth(15);
+        $sheet->getColumnDimension('F')->setWidth(25);
+        $sheet->getColumnDimension('G')->setWidth(20);
+        $sheet->getColumnDimension('H')->setWidth(20);
+
+        // Fill data
+        $row = 2;
+        $no = 1;
+        foreach ($suppliers as $supplier) {
+            $sheet->setCellValue('A' . $row, $no++);
+            $sheet->setCellValue('B' . $row, $supplier->supplier_kode);
+            $sheet->setCellValue('C' . $row, $supplier->supplier_nama);
+            $sheet->setCellValue('D' . $row, $supplier->supplier_alamat);
+            $sheet->setCellValue('E' . $row, $supplier->supplier_telp);
+            $sheet->setCellValue('F' . $row, $supplier->supplier_email);
+            $sheet->setCellValue('G' . $row, $supplier->supplier_kontak);
+            $sheet->setCellValue('H' . $row, $supplier->created_at);
+            $row++;
+        }
+
+        // Create Excel writer
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+        // Set headers to download file
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="Data_Supplier_' . date('YmdHis') . '.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        // Save to output
+        $writer->save('php://output');
+        exit;
+    }
 }
