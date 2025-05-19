@@ -1,37 +1,59 @@
 <?php
-
 namespace App\Models;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Foundation\Auth\User as Authenticatable; 
 
-class UserModel extends Authenticatable
+class UserModel extends Authenticatable implements JWTSubject
 {
+    public function getJWTIdentifier(): string|int
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims(): array
+    {
+        return [];
+    }
+
     use HasFactory;
+    protected $table = 'm_user';
+    protected $primaryKey = 'user_id';
+    protected $fillable = ['username', 'nama', 'password', 'level_id', 'created_at', 'updated_at', 'foto_profile'];
+    protected $hidden = ['password']; // Jangan ditampilkan saat select
+    protected $casts = ['password' => 'hashed']; // Casting password agar otomatis di-hash
 
-    protected $table = 'm_user';        // mendefinisikan nama table dalam model ini
-    protected $primaryKey = 'user_id';  // mendefinisikan primary key nya
-    protected $fillable = ['user_id, username', 'password', 'nama', 'level_id', 'created_at', 'updated_at', 'foto_profile'];
-    protected $hidden = ['password'];
-    protected $casts = ['password' => 'hashed'];
-
+    /**
+     * Relasi ke tabel level
+     */
     public function level(): BelongsTo
     {
         return $this->belongsTo(LevelModel::class, 'level_id', 'level_id');
     }
 
-    public function getRoleName(): string
+    /**
+     * Mendapatkan nama role
+     */
+    public function getRoleName() : string
     {
         return $this->level->level_nama;
     }
-    public function hasRole(string $role): bool
+
+    /**
+     * Cek apakah user memiliki role tertentu
+     */
+    public function hasRole(string $role) : bool
     {
-        return $this->level->level_code === $role;
+        return $this->level->level_kode === $role;
     }
-    public function getRole()
+
+    /**
+     * Mendapatkan kode role
+     */
+    public function getRole() : string
     {
-        return $this->level->level_code;
+        return $this->level->level_kode;
     }
 }
