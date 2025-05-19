@@ -9,6 +9,7 @@ use App\Models\KategoriModel; // Import the KategoriModel class
 use Illuminate\Support\Facades\Validator; // Import the Validator class
 use PhpOffice\PhpSpreadsheet\IOFactory; // Import IOFactory for Excel operations
 use Illuminate\Support\Facades\Log; // Import Log facade for logging errors
+use Barryvdh\DomPDF\Facade\Pdf; // Import the PDF facade for PDF export
 
 class KategoriController extends Controller
 {
@@ -426,5 +427,22 @@ class KategoriController extends Controller
 
         $writer->save('php://output');
         exit;
+    }
+
+    public function export_pdf()
+    {
+        // Get kategori data to export
+        $kategoris = KategoriModel::select('kategori_id', 'kategori_kode', 'kategori_nama')
+            ->orderBy('kategori_id')
+            ->orderBy('kategori_kode')
+            ->get();
+
+        // use Barryvdh\DomPDF\Facade\PDF
+        $pdf = Pdf::loadView('kategori.export_pdf', ['kategoris' => $kategoris]);
+        $pdf->setPaper('a4', 'portrait'); // Set paper size and orientation
+        $pdf->setOption("isRemoteEnabled", true); // Enable remote images
+        $pdf->render();
+
+        return $pdf->stream('Data_Kategori_' . date('Y-m-d_H-i-s') . '.pdf');
     }
 }

@@ -92,6 +92,7 @@ Route::middleware(['authorize:ADM,MNG'])->group(function () {
         Route::get('/import', [KategoriController::class, 'import']); // Show import form
         Route::post('/import_ajax', [KategoriController::class, 'import_ajax']); // Handle file upload
         Route::get('/export_excel', [KategoriController::class, 'export_excel']); // Export data to Excel
+        Route::get('/export_pdf', [KategoriController::class, 'export_pdf']); // ajax form download pdf
     });
 });
 
