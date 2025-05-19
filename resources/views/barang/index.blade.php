@@ -9,6 +9,7 @@
                 <a href="{{ url('/barang/export_excel') }}" class="btn btn-primary"><i class="fa fa-file- excel"></i> Export
                     Excel</a>
                 <a href="{{ url('barang/create') }}" class="btn btn-primary">Tambah Data</a>
+                <a href="{{ url('/barang/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file- pdf"></i> Export Pdf</a>
                 <button onclick="modalAction('{{ url('/barang/create_ajax') }}')" class="btn btn-success">Tambah Data
                     (Ajax)</button>
             </div>
