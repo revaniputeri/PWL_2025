@@ -67,6 +67,7 @@ Route::middleware(['authorize:ADM,MNG'])->group(function () {
         Route::get('/import', [LevelController::class, 'import']); // Show import form
         Route::post('/import_ajax', [LevelController::class, 'import_ajax']); // Handle file upload
         Route::get('/export_excel', [LevelController::class, 'export_excel']); // ajax form download excel
+        Route::get('/export_pdf', [LevelController::class, 'export_pdf']);
     });
 });
 

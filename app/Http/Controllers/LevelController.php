@@ -380,4 +380,19 @@ class LevelController extends Controller
         $writer->save('php://output');
         exit;
     }
+
+    public function export_pdf()
+    {
+        $levels = LevelModel::select('level_id', 'level_code', 'level_nama')
+            ->orderBy('level_id')
+            ->get();
+
+        // use Barryvdh\DomPDF\Facade\PDF
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('level.export_pdf', ['levels' => $levels]);
+        $pdf->setPaper('a4', 'potrait'); //set ukuran kertas dan orientasi
+        $pdf->setOption("isRemoteEnabled", true); //set true jika ada gambar url
+        $pdf->render();
+
+        return $pdf->stream('Data Level ' . date('Y-m-d H:i:s') . '.pdf');
+    }
 }
