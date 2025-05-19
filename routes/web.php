@@ -151,4 +151,11 @@ Route::middleware(['authorize:ADM,MNG'])->group(function () {
         Route::get('/export_excel', [SupplierController::class, 'export_excel']);
         Route::get('/export_pdf', [SupplierController::class, 'export_pdf']); // ajax form download pdf
     });
+
+    // Dashboard yang dapat diakses oleh semua role yang login
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/', [WelcomeController::class, 'index'])->name('dashboard');
+        Route::get('/profile', [UserController::class, 'profile']);
+        Route::post('/user/update-photo', [UserController::class, 'updatePhoto']);
+    });
 });

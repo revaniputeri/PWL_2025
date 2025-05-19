@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yajra\DataTables\Facades\DataTables;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -456,5 +457,82 @@ class UserController extends Controller
         $pdf->render();
 
         return $pdf->stream('Data User' . date('Y-m-d_H-i-s') . '.pdf');
+    }
+
+    /**
+     * Show the user profile page
+     */
+    public function profile()
+    {
+        // Use Laravel's auth system to get the current user
+        $user = auth()->user();
+
+        if (!$user) {
+            return redirect('/login')->with('error', 'Silahkan login terlebih dahulu');
+        }
+
+        // Define breadcrumb as an OBJECT (note the (object) cast)
+        $breadcrumb = (object) [
+            'title' => 'Profile User',
+            'list' => ['Home', 'Profile']
+        ];
+
+        // Define page information
+        $page = (object) [
+            'title' => 'Profil Pengguna'
+        ];
+
+        // Set active menu
+        $activeMenu = 'profile';
+
+        return view('user.profile', compact('user', 'breadcrumb', 'page', 'activeMenu'));
+    }
+
+    /**
+     * Update user profile photo
+     */
+    public function updatePhoto(Request $request)
+    {
+        // Validasi file
+        $request->validate([
+            'foto_profile' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        try {
+            // Get the authenticated user
+            $user = auth()->user();
+
+            if (!$user) {
+                return redirect('/login')->with('error', 'Silahkan login terlebih dahulu');
+            }
+
+            // Get the user ID
+            $userId = $user->user_id;
+
+            // Get the proper UserModel instance
+            $userModel = UserModel::find($userId);
+
+            if (!$userModel) {
+                return redirect('/login')->with('error', 'User tidak ditemukan');
+            }
+
+            // Delete old photo if exists
+            if ($userModel->foto_profile && file_exists(storage_path('app/public/' . $userModel->foto_profile))) {
+                Storage::disk('public')->delete($userModel->foto_profile);
+            }
+
+            // Store new photo
+            $fileName = 'profile_' . $userId . '_' . time() . '.' . $request->foto_profile->extension();
+            $path = $request->foto_profile->storeAs('profiles', $fileName, 'public');
+
+            // Update user record using update() method
+            UserModel::where('user_id', $userId)->update([
+                'foto_profile' => $path
+            ]);
+
+            return redirect()->back()->with('success', 'Foto profile berhasil diperbarui');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal mengupload foto: ' . $e->getMessage());
+        }
     }
 }
