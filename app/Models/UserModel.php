@@ -1,10 +1,12 @@
 <?php
+
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Foundation\Auth\User as Authenticatable; 
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class UserModel extends Authenticatable implements JWTSubject
 {
@@ -36,7 +38,7 @@ class UserModel extends Authenticatable implements JWTSubject
     /**
      * Mendapatkan nama role
      */
-    public function getRoleName() : string
+    public function getRoleName(): string
     {
         return $this->level->level_nama;
     }
@@ -44,16 +46,17 @@ class UserModel extends Authenticatable implements JWTSubject
     /**
      * Cek apakah user memiliki role tertentu
      */
-    public function hasRole(string $role) : bool
+    public function hasRole(string $role): bool
     {
-        return $this->level->level_kode === $role;
+        return $this->level->level_code === $role;
     }
 
     /**
      * Mendapatkan kode role
      */
-    public function getRole() : string
+    public function getRole(): ?string
     {
-        return $this->level->level_kode;
+        // dd($this->level);
+        return $this->level ? $this->level->level_code : null;
     }
 }

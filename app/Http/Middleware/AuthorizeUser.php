@@ -16,12 +16,22 @@ class AuthorizeUser
 
     public function handle(Request $request, Closure $next, $roles): Response
     {
+        // Get the user's role
         $user_role = $request->user()->getRole();
-        $allowedRoles = is_array($roles) ? $roles : explode('|', $roles);
+
+        // Always allow ADM (admin) to access any route
+        // dd($user_role);
+        if ($user_role === 'ADM') {
+            return $next($request);
+        }
+
+        // For other roles, check specific permissions
+        $allowedRoles = is_array($roles) ? $roles : explode(',', $roles);
         if (in_array($user_role, $allowedRoles)) {
             return $next($request);
         }
-        // Jika tidak memiliki role yang sesuai, tampilkan pesan error
+
+        // If no matching role, show forbidden message
         abort(403, 'Forbidden. Kamu tidak punya akses ke halaman ini');
     }
 }
