@@ -6,6 +6,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\API\LevelController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\KategoriController;
+use App\Http\Controllers\API\BarangController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,4 +50,13 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/kategori/{id}', [KategoriController::class, 'show']);
     Route::put('/kategori/{id}', [KategoriController::class, 'update']);
     Route::delete('/kategori/{id}', [KategoriController::class, 'destroy']);
+});
+
+// barang
+Route::middleware('auth:api')->group(function() {
+    Route::get('/barang', [BarangController::class, 'index']);
+    Route::post('/barang', [BarangController::class, 'store']);
+    Route::get('/barang/{id}', [BarangController::class, 'show']);
+    Route::put('/barang/{id}', [BarangController::class, 'update']);
+    Route::delete('/barang/{id}', [BarangController::class, 'destroy']);
 });
